@@ -36,9 +36,9 @@ tax_df = fread("/data/san/data1/users/david/mining_2023/class_IId_analysis/data/
 assembly_tax_df = tax_df %>%
   as.data.frame() %>%
   separate(classification, c("domain", "phylum", "class", "order", "family", "genus", "species"), sep = ";") %>%
-  mutate(assembly = str_sub(user_genome, start = 1L, end = 15L)) 
+  mutate(assembly = str_sub(user_genome, start = 1L, end = 15L))
 
-tree_annot_df = tax_df %>% 
+tree_annot_df = tax_df %>%
   column_to_rownames(var = "user_genome") %>%
   as.data.frame() %>%
   separate(classification, c("domain", "phylum", "class", "order", "family", "genus", "species"), sep = ";") %>%
@@ -1057,6 +1057,29 @@ tinytex::pdflatex(output_tex)
 # Align proteins from arcanobacterium
 ########################################
 input_file = "/data/san/data1/users/david/mining_2023/class_IId_analysis/data/core_peptide_analyis/actinomycetota/compre.faa"
+output_dir = "/data/san/data1/users/david/mining_2023/class_IId_analysis/figures"
+proteins = readAAStringSet(input_file)
+
+aligned_proteins = msa(proteins, type = "protein", method = "ClustalW", 
+  verbose= TRUE, order= "aligned" )
+
+# Generate output file path
+output_base_name <- tools::file_path_sans_ext(basename(input_file))
+output_tex = file.path(output_dir, paste0(output_base_name, "_alignment_output.tex"))
+
+# Generate alignment output and convert to PDF
+msaPrettyPrint(aligned_proteins, 
+  file=output_tex, output="tex", verbose=FALSE, askForOverwrite=FALSE,
+  showNames="left", showNumbering="none", showLogo="top",
+               showConsensus="bottom", logoColors="hydropathy",
+               shadingMode = "identical",shadingModeArg = 90)
+
+tinytex::pdflatex(output_tex)
+
+########################################
+# Align proteins from arcanobacterium
+########################################
+input_file = "/data/san/data1/users/david/mining_2023/class_IId_analysis/data/core_peptide_analyis/synthesized_peptides_and_aureocin.faa"
 output_dir = "/data/san/data1/users/david/mining_2023/class_IId_analysis/figures"
 proteins = readAAStringSet(input_file)
 
